@@ -35,7 +35,6 @@ func pingServers(server *Server) {
 		server.Status = "Gone"
 		server.Latency = 0
 		return
-
 	}
 
 	if strings.Contains(string(output), "1 received") {
@@ -75,7 +74,7 @@ func serverList() {
 
 	servers = append(servers, Server{
 		Name:    "NextCloud",
-		Address: "192.168.0.126",
+		Address: "192.168.0.122",
 		Status:  "unknown",
 	})
 
