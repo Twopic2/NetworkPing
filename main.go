@@ -84,6 +84,12 @@ func serverList() {
 		Status:  "unknown",
 	})
 
+	servers = append(servers, Server{
+		Name:    "Digital Ocean VPS",
+		Address: "146.190.153.87",
+		Status:  "unknown",
+	})
+
 }
 
 func getServersHandler(w http.ResponseWriter, r *http.Request) {
