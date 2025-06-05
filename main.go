@@ -48,7 +48,6 @@ func pingServers(server *Server) {
 }
 
 func pingAllServers() {
-
 	serverMutex.Lock()
 	defer serverMutex.Unlock()
 
@@ -61,11 +60,9 @@ func pingAllServers() {
 		}(i)
 	}
 	wg.Wait()
-
 }
 
 func serverList() {
-
 	servers = append(servers, Server{
 		Name:    "Proxmox",
 		Address: "192.168.0.18",
@@ -74,13 +71,13 @@ func serverList() {
 
 	servers = append(servers, Server{
 		Name:    "NextCloud",
-		Address: "192.168.0.122",
+		Address: "192.168.0.123",
 		Status:  "unknown",
 	})
 
 	servers = append(servers, Server{
 		Name:    "Website",
-		Address: "192.168.0.68",
+		Address: "192.168.0.129",
 		Status:  "unknown",
 	})
 
@@ -90,6 +87,11 @@ func serverList() {
 		Status:  "unknown",
 	})
 
+	servers = append(servers, Server{
+		Name:    "Switch",
+		Address: "192.168.0.49",
+		Status:  "unknown",
+	})
 }
 
 func getServersHandler(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +112,7 @@ func serverJSON() {
 	serverMutex.RLock()
 	defer serverMutex.RUnlock()
 
-	file, err := os.Create("servers.json")
+	file, err := os.Create("serverping/servers.json")
 
 	if err != nil {
 		log.Fatal()
@@ -125,32 +127,25 @@ func serverJSON() {
 	if err != nil {
 		log.Fatal()
 	}
-
 }
 
 func webHanlder() {
-
 	http.HandleFunc("/api/servers", getServersHandler)
 	http.HandleFunc("/api/ping", pingServerNow)
-
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
-
 }
 
 func main() {
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	serverList()
-
 	webHanlder()
 
 	go func() {
-
 		pingAllServers()
 
 		ticker := time.NewTicker(1 * time.Minute)
@@ -161,11 +156,9 @@ func main() {
 			pingAllServers()
 			serverJSON()
 		}
-
 	}()
 
 	log.Printf("Server starting on port %s", port)
 	log.Printf("Web UI available at http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-
 }
